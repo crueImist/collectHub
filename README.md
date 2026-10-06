@@ -1,6 +1,8 @@
 # collectHub
 Plataforma web multiempresa para la
-gestión y venta de figuras coleccionables
+gestión y venta de figuras coleccionables  
+
+
 Grupo 06
 
 Gabriel Mijangos Quesada
