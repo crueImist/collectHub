@@ -30,7 +30,7 @@
             <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                 <ul class="navbar-nav">
                     <li class="nav-item px-2"><a class="nav-link" th:href="@{/}">[[#{plantilla.inicio}]]</a></li>
-                    <li class="nav-item px-2"><a class="nav-link" th:href="@{/catalogo}">[[#{plantilla.catalogo}]]</a></li>
+                    <li class="nav-item px-2"><a class="nav-link" th:href="${identificador != null} ? @{/tienda/{id}/catalogo(id=${identificador})} : @{/tienda}">[[#{plantilla.catalogo}]]</a></li>
                     <li class="nav-item px-2"><a class="nav-link" th:href="@{/carrito}">[[#{plantilla.carrito}]]</a></li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">
@@ -39,7 +39,7 @@
                             <li><a class="dropdown-item" th:href="@{/empresa/perfil}">[[#{plantilla.miEmpresa}]]</a></li>
                             <li><a class="dropdown-item" th:href="@{/usuario/listado}">[[#{plantilla.usuarios}]]</a></li>
                             <li><a class="dropdown-item" th:href="@{/categoria/listado}">[[#{plantilla.categorias}]]</a></li>
-                            <li><a class="dropdown-item" th:href="@{/producto/listado}">[[#{plantilla.productos}]]</a></li>
+                            <li><a class="dropdown-item" th:href="${identificador != null} ? @{/tienda/{id}/producto/listado(id=${identificador})} : @{/tienda}">[[#{plantilla.productos}]]</a></li>
                             <li><a class="dropdown-item" th:href="@{/inventario/listado}">[[#{plantilla.inventario}]]</a></li>
                             <li><a class="dropdown-item" th:href="@{/pedido/listado}">[[#{plantilla.pedidos}]]</a></li>
                         </ul>
