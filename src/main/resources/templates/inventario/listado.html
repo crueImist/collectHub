@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{general/fragmentos :: head}"></head>
+    <body>
+        <header th:replace="~{general/fragmentos :: header}"></header>
+
+        <!-- ADMIN_EMPRESA e INVENTARIO pueden ajustar; CONSULTA solo ve el inventario -->
+        <section th:replace="~{inventario/fragmentos :: formulario}" th:if="${esAdminEmpresa or esInventario}"></section>
+        <section th:replace="~{inventario/fragmentos :: listado}"></section>
+
+        <section th:replace="~{general/fragmentos :: mostrarToast}"></section>
+        <footer th:replace="~{general/fragmentos :: footer}"></footer>
+
+        <script th:src="@{/js/modulos/inventario.js}"></script>
+    </body>
+</html>

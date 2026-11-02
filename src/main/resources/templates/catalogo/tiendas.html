@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{general/fragmentos :: head}"></head>
+    <body>
+        <header th:replace="~{general/fragmentos :: header}"></header>
+
+        <section class="container py-4">
+            <h3 class="mb-4">[[#{tienda.listado}]]</h3>
+            <div th:if="${empresas != null and !empresas.empty}" class="row row-cols-1 row-cols-md-3 g-4">
+                <div th:each="e : ${empresas}" class="col">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <h5 class="card-title" th:text="${e.nombre}">Tienda</h5>
+                            <p class="text-muted mb-0" th:text="${e.identificador}">identificador</p>
+                        </div>
+                        <div class="card-footer bg-white text-center">
+                            <a class="btn btn-primary"
+                               th:href="@{/tienda/{id}/catalogo(id=${e.identificador})}">
+                                <i class="fa-solid fa-store"></i> [[#{tienda.ver}]]
+                            </a>
+                            <!-- Solo para ADMIN_EMPRESA e INVENTARIO de esta misma empresa -->
+                            <a class="btn btn-outline-secondary"
+                               th:if="${sesion != null and sesion.identificadorEmpresa == e.identificador and (esAdminEmpresa or esInventario)}"
+                               th:href="@{/tienda/{id}/producto/listado(id=${e.identificador})}">
+                                <i class="fa-solid fa-boxes-stacked"></i> [[#{tienda.administrar}]]
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center p-2" th:if="${empresas == null or empresas.empty}">
+                <span>[[#{tienda.vacia}]]</span>
+            </div>
+        </section>
+
+        <section th:replace="~{general/fragmentos :: mostrarToast}"></section>
+        <footer th:replace="~{general/fragmentos :: footer}"></footer>
+    </body>
+</html>

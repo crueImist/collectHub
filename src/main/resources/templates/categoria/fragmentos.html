@@ -1,0 +1,128 @@
+<!-- 1 Fragmento con el formulario unificado para agregar y modificar una categoría (HU-06) -->
+<section th:fragment="formulario">
+    <div class="row py-4 mb-2 bg-light">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-3">
+            <button type="button"
+                    class="btn btn-primary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#categoriaModal"
+                    data-modo="agregar"
+                    th:data-titulo="#{categoria.agregar}">
+                <i class="fa-solid fa-plus"></i>
+                [[#{categoria.agregar}]]
+            </button>
+        </div>
+    </div>
+    <div class="modal fade" id="categoriaModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Con archivos el token CSRF va en la URL (igual que en Mi empresa) -->
+                <form id="categoriaForm" method="post" enctype="multipart/form-data"
+                      th:action="@{/categoria/guardar(_csrf=${_csrf.token})}">
+                    <div class="modal-header" id="categoriaModalHeader">
+                        <h5 class="modal-title" id="categoriaModalTitulo"></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="[[#{accion.cerrar}]]"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="categoriaId" name="idCategoria"/>
+                        <div class="mb-3">
+                            <label for="categoriaDescripcion">
+                                [[#{categoria.descripcion}]]
+                            </label>
+                            <input type="text" id="categoriaDescripcion" name="descripcion" class="form-control" maxlength="50" required="required"/>
+                        </div>
+                        <div class="mb-3">
+                            <input type="checkbox" id="categoriaActivo" name="activo" class="form-check-input"/>
+                            <label for="categoriaActivo" class="form-check-label">
+                                [[#{categoria.activo}]]
+                            </label>
+                        </div>
+                        <div class="mb-3">
+                            <label for="categoriaImagenFile">
+                                [[#{categoria.imagen}]]
+                            </label>
+                            <input type="file" id="categoriaImagenFile" name="imagenFile" class="form-control" accept="image/png,image/jpeg"
+                                   th:data-error-tamano="#{categoria.imagen.errorTamano}"/>
+                            <div class="form-text">[[#{categoria.imagen.ayuda}]]</div>
+                            <img id="categoriaPreview" class="d-none mt-2" alt="[[#{categoria.imagen}]]" height="150"/>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fa-solid fa-xmark"></i> [[#{accion.cerrar}]]
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fa-solid fa-floppy-disk"></i> [[#{accion.guardar}]]
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 2 Fragmento para el listado de categorías de la empresa -->
+<section th:fragment="listado" class="p-3">
+    <div class="row p-3">
+        <div class="col-md-9">
+            <div class="card p-2">
+                <div class="card-header"><h4>[[#{categoria.listado}]]</h4></div>
+                <div class="card-body">
+                    <div th:if="${categorias != null and !categorias.empty}" class="table-responsive">
+                        <table class="table table-striped table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>[[#{categoria.descripcion}]]</th>
+                                    <th>[[#{categoria.imagen}]]</th>
+                                    <th>[[#{categoria.activo}]]</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="c : ${categorias}">
+                                    <td>[[${c.idCategoria}]]</td>
+                                    <td>[[${c.descripcion}]]</td>
+                                    <td><img th:if="${c.rutaImagen != null}" th:src="${c.rutaImagen}" th:alt="${c.descripcion}" height="60"/></td>
+                                    <td>
+                                        <span class="badge" th:classappend="${c.activo} ? 'text-bg-success' : 'text-bg-secondary'"
+                                              th:text="${c.activo} ? #{categoria.estado.activa} : #{categoria.estado.inactiva}"></span>
+                                    </td>
+                                    <td class="text-end">
+                                        <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#categoriaModal"
+                                                data-modo="editar" th:data-titulo="#{accion.actualizar}" th:data-id="${c.idCategoria}"
+                                                th:data-descripcion="${c.descripcion}" th:data-activo="${c.activo}"
+                                                th:data-imagen="${c.rutaImagen != null ? c.rutaImagen : ''}">
+                                            <i class="fas fa-pencil-alt"></i> [[#{accion.actualizar}]]
+                                        </button>
+                                        <!-- HU-06: las categorías no se eliminan, se desactivan -->
+                                        <form th:action="@{/categoria/estado}" method="post" class="d-inline">
+                                            <input type="hidden" name="idCategoria" th:value="${c.idCategoria}"/>
+                                            <button type="submit" class="btn btn-sm"
+                                                    th:classappend="${c.activo} ? 'btn-outline-danger' : 'btn-outline-success'">
+                                                <i class="fa-solid" th:classappend="${c.activo} ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                                [[${c.activo} ? #{categoria.desactivar} : #{categoria.activar}]]
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center p-2" th:if="${categorias == null or categorias.empty}">
+                        <span>[[#{lista.vacia}]]</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-success text-white mb-3">
+                <div class="card-body"><h3>[[#{categoria.total}]]</h3>
+                    <h4 class="fs-2"><i class="fas fa-layer-group"></i> [[${totalCategorias}]]</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{general/fragmentos :: head}"></head>
+    <body>
+        <header th:replace="~{general/fragmentos :: header}"></header>
+
+        <section class="container py-4">
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body p-4">
+                            <h3 class="text-center">[[#{login.titulo}]]</h3>
+                            <p class="text-center text-muted mb-4">[[#{login.subtitulo}]]</p>
+
+                            <!-- Pestañas: son enlaces, cada una es su propia página -->
+                            <ul class="nav nav-tabs nav-fill mb-4">
+                                <li class="nav-item">
+                                    <a class="nav-link active"
+                                       th:href="${tiendaFija} ? @{/tienda/{id}/login(id=${identificador})} : @{/login}">[[#{login.tab.ingresar}]]</a>
+                                </li>
+                                <li class="nav-item" th:if="${tiendaFija}">
+                                    <a class="nav-link" th:href="@{/tienda/{id}/registro(id=${identificador})}">[[#{login.tab.crear}]]</a>
+                                </li>
+                            </ul>
+
+                            <div class="alert alert-danger" th:if="${param.error != null}">[[#{error.login}]]</div>
+
+                            <form method="post" th:action="@{/login}">
+                                <!-- La tienda viaja oculta; sin tienda = administrador de la plataforma -->
+                                <input type="hidden" name="tienda" th:if="${tiendaFija}" th:value="${identificador}"/>
+
+                                <div class="mb-3">
+                                    <label for="correo" class="form-label">[[#{login.correo}]]</label>
+                                    <input type="email" class="form-control" id="correo" name="correo"
+                                           required="required" autofocus="autofocus" maxlength="75"
+                                           placeholder="nombre@correo.com"/>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="contrasena" class="form-label">[[#{login.password}]]</label>
+                                    <input type="password" class="form-control" id="contrasena" name="contrasena"
+                                           required="required"/>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">
+                                    [[#{login.ingresar}]] <i class="fa-solid fa-chevron-right"></i>
+                                </button>
+                            </form>
+
+                            <p class="text-center text-muted small mt-3 mb-0">
+                                [[#{login.verTiendas}]] <a th:href="@{/tienda}">[[#{login.verTiendas.enlace}]]</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section th:replace="~{general/fragmentos :: mostrarToast}"></section>
+        <footer th:replace="~{general/fragmentos :: footer}"></footer>
+    </body>
+</html>

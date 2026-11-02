@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{general/fragmentos :: head}"></head>
+    <body>
+        <header th:replace="~{general/fragmentos :: header}"></header>
+
+        <section class="container py-4">
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body p-4">
+                            <h3 class="text-center">[[#{registro.titulo}]]</h3>
+                            <p class="text-center text-muted mb-4">[[#{login.subtitulo}]]</p>
+
+                            <ul class="nav nav-tabs nav-fill mb-4">
+                                <li class="nav-item">
+                                    <a class="nav-link" th:href="@{/tienda/{id}/login(id=${identificador})}">[[#{login.tab.ingresar}]]</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link active" th:href="@{/tienda/{id}/registro(id=${identificador})}">[[#{login.tab.crear}]]</a>
+                                </li>
+                            </ul>
+
+                            <form method="post" th:action="@{/tienda/{id}/registro(id=${identificador})}" th:object="${form}">
+                                <div class="mb-3">
+                                    <label for="nombre" class="form-label">[[#{registro.nombre}]]</label>
+                                    <input type="text" class="form-control" id="nombre" th:field="*{nombre}" maxlength="30"/>
+                                    <div class="text-danger small" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="apellidos" class="form-label">[[#{registro.apellidos}]]</label>
+                                    <input type="text" class="form-control" id="apellidos" th:field="*{apellidos}" maxlength="40"/>
+                                    <div class="text-danger small" th:if="${#fields.hasErrors('apellidos')}" th:errors="*{apellidos}"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="correo" class="form-label">[[#{login.correo}]]</label>
+                                    <input type="email" class="form-control" id="correo" th:field="*{correo}"
+                                           maxlength="75" placeholder="nombre@correo.com"/>
+                                    <div class="text-danger small" th:if="${#fields.hasErrors('correo')}" th:errors="*{correo}"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="contrasena" class="form-label">[[#{login.password}]]</label>
+                                    <input type="password" class="form-control" id="contrasena" th:field="*{contrasena}" maxlength="72"/>
+                                    <div class="form-text">[[#{registro.password.ayuda}]]</div>
+                                    <div class="text-danger small" th:if="${#fields.hasErrors('contrasena')}" th:errors="*{contrasena}"></div>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">
+                                    [[#{registro.crear}]] <i class="fa-solid fa-chevron-right"></i>
+                                </button>
+                            </form>
+
+                            <p class="text-center text-muted small mt-3 mb-0">
+                                [[#{login.verTiendas}]] <a th:href="@{/tienda}">[[#{login.verTiendas.enlace}]]</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section th:replace="~{general/fragmentos :: mostrarToast}"></section>
+        <footer th:replace="~{general/fragmentos :: footer}"></footer>
+    </body>
+</html>

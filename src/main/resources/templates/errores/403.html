@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{general/fragmentos :: head}"></head>
+    <body>
+        <header th:replace="~{general/fragmentos :: header}"></header>
+
+        <section class="container my-5">
+            <div class="p-5 bg-light rounded-3 text-center">
+                <h2 class="display-6 fw-bold">[[#{e403.titulo}]]</h2>
+                <p class="lead">[[#{e403.texto}]]</p>
+                <a class="btn btn-secondary" th:href="@{/}">[[#{accion.regresar}]]</a>
+            </div>
+        </section>
+
+        <section th:replace="~{general/fragmentos :: mostrarToast}"></section>
+        <footer th:replace="~{general/fragmentos :: footer}"></footer>
+    </body>
+</html>

@@ -1,0 +1,155 @@
+<!-- 1 Fragmento con el formulario unificado para crear y modificar un empleado (HU-05) -->
+<section th:fragment="formulario">
+    <div class="row py-4 mb-2 bg-light">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-3">
+            <button type="button"
+                    class="btn btn-primary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#usuarioModal"
+                    data-modo="agregar"
+                    th:data-titulo="#{usuario.empleado.agregar}">
+                <i class="fa-solid fa-user-plus"></i>
+                [[#{usuario.empleado.agregar}]]
+            </button>
+        </div>
+    </div>
+    <div class="modal fade" id="usuarioModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <!-- Sin archivos: Thymeleaf agrega solo el token CSRF -->
+                <form id="usuarioForm" method="post" th:action="@{/usuario/guardar}"
+                      th:data-error-rol="#{usuario.error07}">
+                    <div class="modal-header" id="usuarioModalHeader">
+                        <h5 class="modal-title" id="usuarioModalTitulo"></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="[[#{accion.cerrar}]]"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="usuarioId" name="idUsuario"/>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="usuarioNombre">[[#{usuario.nombre}]]</label>
+                                <input type="text" id="usuarioNombre" name="nombre" class="form-control" maxlength="30" required="required"/>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="usuarioApellidos">[[#{usuario.apellidos}]]</label>
+                                <input type="text" id="usuarioApellidos" name="apellidos" class="form-control" maxlength="40" required="required"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="usuarioCorreo">[[#{usuario.correo}]]</label>
+                                <input type="email" id="usuarioCorreo" name="correo" class="form-control" maxlength="75" required="required"/>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="usuarioTelefono">[[#{usuario.telefono}]]</label>
+                                <input type="text" id="usuarioTelefono" name="telefono" class="form-control" maxlength="25"/>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="usuarioContrasena">[[#{usuario.password}]]</label>
+                            <input type="password" id="usuarioContrasena" name="contrasena" class="form-control"
+                                   maxlength="72" minlength="8" autocomplete="new-password"/>
+                            <div class="form-text" id="usuarioAyudaCrear" th:text="#{usuario.password.ayuda.crear}"></div>
+                            <div class="form-text d-none" id="usuarioAyudaEditar" th:text="#{usuario.password.ayuda.editar}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label d-block">[[#{usuario.roles}]]</label>
+                            <div class="form-check" th:each="rol : ${rolesDisponibles}">
+                                <input type="checkbox" class="form-check-input usuario-rol" name="roles"
+                                       th:id="${'rol' + rol}" th:value="${rol}"/>
+                                <label class="form-check-label" th:for="${'rol' + rol}"
+                                       th:text="#{${'usuario.rol.' + rol}}">Rol</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fa-solid fa-xmark"></i> [[#{accion.cerrar}]]
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fa-solid fa-floppy-disk"></i> [[#{accion.guardar}]]
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 2 Fragmento para el listado del personal de la empresa (administrador y empleados) -->
+<section th:fragment="listado" class="p-3">
+    <div class="row p-3">
+        <div class="col-md-9">
+            <div class="card p-2">
+                <div class="card-header"><h4>[[#{usuario.listado}]]</h4></div>
+                <div class="card-body">
+                    <div th:if="${usuarios != null and !usuarios.empty}" class="table-responsive">
+                        <table class="table table-striped table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>[[#{usuario.nombre}]]</th>
+                                    <th>[[#{usuario.correo}]]</th>
+                                    <th>[[#{usuario.telefono}]]</th>
+                                    <th>[[#{usuario.roles}]]</th>
+                                    <th>[[#{usuario.activo}]]</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="u : ${usuarios}"
+                                    th:with="esAdmin=${#strings.contains(#strings.listJoin(u.roles.![nombre], ','), 'ADMIN_EMPRESA')}">
+                                    <td>[[${u.nombre}]] [[${u.apellidos}]]</td>
+                                    <td>[[${u.correo}]]</td>
+                                    <td>[[${u.telefono}]]</td>
+                                    <td>
+                                        <span th:if="${esAdmin}" class="badge text-bg-dark me-1">[[#{usuario.administrador}]]</span>
+                                        <th:block th:unless="${esAdmin}">
+                                            <span class="badge text-bg-info me-1" th:each="r : ${u.roles}"
+                                                  th:text="${r.nombre}">ROL</span>
+                                        </th:block>
+                                    </td>
+                                    <td>
+                                        <span class="badge" th:classappend="${u.activo} ? 'text-bg-success' : 'text-bg-secondary'"
+                                              th:text="${u.activo} ? #{usuario.estado.activo} : #{usuario.estado.inactivo}"></span>
+                                    </td>
+                                    <td class="text-end">
+                                        <!-- El administrador de la empresa no se modifica ni se desactiva desde aquí (RN-09) -->
+                                        <th:block th:unless="${esAdmin}">
+                                            <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#usuarioModal"
+                                                    data-modo="editar" th:data-titulo="#{usuario.empleado.editar}" th:data-id="${u.idUsuario}"
+                                                    th:data-nombre="${u.nombre}" th:data-apellidos="${u.apellidos}"
+                                                    th:data-correo="${u.correo}" th:data-telefono="${u.telefono != null ? u.telefono : ''}"
+                                                    th:data-roles="${#strings.listJoin(u.roles.![nombre], ',')}">
+                                                <i class="fas fa-pencil-alt"></i> [[#{accion.actualizar}]]
+                                            </button>
+                                            <form th:action="@{/usuario/estado}" method="post" class="d-inline">
+                                                <input type="hidden" name="idUsuario" th:value="${u.idUsuario}"/>
+                                                <button type="submit" class="btn btn-sm"
+                                                        th:classappend="${u.activo} ? 'btn-outline-danger' : 'btn-outline-success'">
+                                                    <i class="fa-solid" th:classappend="${u.activo} ? 'fa-user-slash' : 'fa-user-check'"></i>
+                                                    [[${u.activo} ? #{usuario.desactivar} : #{usuario.activar}]]
+                                                </button>
+                                            </form>
+                                        </th:block>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center p-2" th:if="${usuarios == null or usuarios.empty}">
+                        <span>[[#{lista.vacia}]]</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-success text-white mb-3">
+                <div class="card-body"><h3>[[#{usuario.total}]]</h3>
+                    <h4 class="fs-2"><i class="fas fa-users"></i> [[${totalUsuarios}]]</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

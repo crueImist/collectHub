@@ -1,0 +1,160 @@
+<!-- 1 Fragmento con la ventana para ajustar el stock de un producto (HU-13) -->
+<section th:fragment="formulario">
+    <div class="modal fade" id="ajusteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="ajusteForm" method="post" th:action="@{/inventario/ajustar}">
+                    <div class="modal-header bg-info text-white">
+                        <h5 class="modal-title">[[#{inventario.ajustar.titulo}]]</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="[[#{accion.cerrar}]]"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="ajusteIdProducto" name="idProducto"/>
+                        <p class="mb-1"><strong id="ajusteProducto"></strong></p>
+                        <p class="text-muted">[[#{inventario.existencias.actuales}]]: <span id="ajusteExistencias"></span></p>
+                        <div class="mb-3">
+                            <label for="ajusteTipo" class="form-label">[[#{inventario.tipo}]]</label>
+                            <select id="ajusteTipo" name="tipo" class="form-select" required="required">
+                                <option value="ENTRADA">[[#{inventario.opcion.entrada}]]</option>
+                                <option value="SALIDA">[[#{inventario.opcion.salida}]]</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ajusteCantidad" class="form-label">[[#{inventario.cantidad}]]</label>
+                            <input type="number" id="ajusteCantidad" name="cantidad" class="form-control"
+                                   min="1" max="1000000" step="1" required="required"/>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ajusteMotivo" class="form-label">[[#{inventario.motivo}]]</label>
+                            <input type="text" id="ajusteMotivo" name="motivo" class="form-control"
+                                   maxlength="255" required="required"/>
+                            <div class="form-text">[[#{inventario.motivo.ayuda}]]</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fa-solid fa-xmark"></i> [[#{accion.cerrar}]]
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fa-solid fa-floppy-disk"></i> [[#{accion.guardar}]]
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 2 Fragmento para consultar el inventario de la empresa -->
+<section th:fragment="listado" class="p-3">
+    <div class="row p-3">
+        <div class="col-md-9">
+            <div class="card p-2">
+                <div class="card-header"><h4>[[#{inventario.listado}]]</h4></div>
+                <div class="card-body">
+                    <div th:if="${productos != null and !productos.empty}" class="table-responsive">
+                        <table class="table table-striped table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>[[#{producto.foto}]]</th>
+                                    <th>[[#{producto.codigo}]]</th>
+                                    <th>[[#{producto.nombre}]]</th>
+                                    <th>[[#{producto.categoria}]]</th>
+                                    <th class="text-center">[[#{producto.existencias}]]</th>
+                                    <th>[[#{producto.activo}]]</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="p : ${productos}">
+                                    <td><img th:if="${p.rutaImagen != null}" th:src="${p.rutaImagen}"
+                                             th:alt="${p.nombre}" height="50"/></td>
+                                    <td>[[${p.codigo}]]</td>
+                                    <td>[[${p.nombre}]]</td>
+                                    <td>[[${p.categoria.descripcion}]]</td>
+                                    <td class="text-center">
+                                        <span class="badge fs-6" th:classappend="${p.existencias > 0} ? 'text-bg-success' : 'text-bg-danger'">[[${p.existencias}]]</span>
+                                    </td>
+                                    <td th:text="${p.activo} ? #{producto.estado.activa} : #{producto.estado.inactiva}"></td>
+                                    <td class="text-end">
+                                        <button type="button" class="btn btn-warning btn-sm"
+                                                th:if="${esAdminEmpresa or esInventario}"
+                                                data-bs-toggle="modal" data-bs-target="#ajusteModal"
+                                                th:data-id="${p.idProducto}" th:data-nombre="${p.nombre}"
+                                                th:data-existencias="${p.existencias}">
+                                            <i class="fa-solid fa-boxes-stacked"></i> [[#{inventario.ajustar}]]
+                                        </button>
+                                        <a class="btn btn-outline-secondary btn-sm"
+                                           th:href="@{/inventario/historial/{id}(id=${p.idProducto})}">
+                                            <i class="fa-solid fa-clock-rotate-left"></i> [[#{inventario.historial}]]
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center p-2" th:if="${productos == null or productos.empty}">
+                        <span>[[#{lista.vacia}]]</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center bg-success text-white mb-3">
+                <div class="card-body">
+                    <h3>[[#{producto.total}]]</h3>
+                    <h4 class="fs-2"><i class="fas fa-layer-group"></i> [[${totalProductos}]]</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 3 Fragmento con el historial de movimientos de un producto -->
+<section th:fragment="historial" class="p-3">
+    <div class="row p-3">
+        <div class="col-md-10">
+            <div class="card p-2">
+                <div class="card-header">
+                    <h4>[[#{inventario.historial.titulo(${producto.nombre})}]]</h4>
+                    <span class="text-muted">[[#{producto.codigo}]]: [[${producto.codigo}]] ·
+                        [[#{inventario.existencias.actuales}]]: [[${producto.existencias}]]</span>
+                </div>
+                <div class="card-body">
+                    <div th:if="${movimientos != null and !movimientos.empty}" class="table-responsive">
+                        <table class="table table-striped table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>[[#{inventario.fecha}]]</th>
+                                    <th>[[#{inventario.tipo}]]</th>
+                                    <th class="text-end">[[#{inventario.cantidad}]]</th>
+                                    <th>[[#{inventario.motivo}]]</th>
+                                    <th>[[#{inventario.usuario}]]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="m : ${movimientos}">
+                                    <td th:text="${m.fechaCreacion != null} ? ${#strings.replace(#strings.substring(m.fechaCreacion.toString(), 0, 16), 'T', ' ')} : ''"></td>
+                                    <td>
+                                        <span class="badge"
+                                              th:classappend="${m.tipo.name() == 'ENTRADA'} ? 'text-bg-success' : (${m.tipo.name() == 'SALIDA'} ? 'text-bg-danger' : 'text-bg-secondary')"
+                                              th:text="#{${'inventario.tipo.' + m.tipo.name()}}">Tipo</span>
+                                    </td>
+                                    <td class="text-end">[[${m.cantidad}]]</td>
+                                    <td>[[${m.motivo}]]</td>
+                                    <td th:text="${m.usuario != null} ? ${m.usuario.nombre + ' ' + m.usuario.apellidos} : #{inventario.sinUsuario}"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center p-2" th:if="${movimientos == null or movimientos.empty}">
+                        <span>[[#{inventario.historial.vacio}]]</span>
+                    </div>
+                    <a class="btn btn-secondary mt-3" th:href="@{/inventario/listado}">
+                        <i class="fa-solid fa-arrow-left"></i> [[#{accion.regresar}]]
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
