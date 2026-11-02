@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{general/fragmentos :: head}"></head>
+    <body>
+        <header th:replace="~{general/fragmentos :: header}"></header>
+
+        <section class="container py-4">
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body p-4">
+                            <h3 class="text-center mb-4">[[#{empresa.perfil.titulo}]]</h3>
+
+                            <form method="post" enctype="multipart/form-data"
+                                  th:action="@{/empresa/perfil(_csrf=${_csrf.token})}" th:object="${form}">
+                                <div class="mb-3">
+                                    <label for="identificadorEmpresa" class="form-label">[[#{empresa.perfil.identificador}]]</label>
+                                    <input type="text" class="form-control" id="identificadorEmpresa"
+                                           th:value="${empresa.identificador}" readonly="readonly"/>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="nombre" class="form-label">[[#{plataforma.empresa.nombre}]]</label>
+                                    <input type="text" class="form-control" id="nombre" th:field="*{nombre}" maxlength="100"/>
+                                    <div class="text-danger small" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="correoContacto" class="form-label">[[#{plataforma.empresa.correo}]]</label>
+                                    <input type="email" class="form-control" id="correoContacto" th:field="*{correoContacto}" maxlength="100"/>
+                                    <div class="text-danger small" th:if="${#fields.hasErrors('correoContacto')}" th:errors="*{correoContacto}"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="telefonoContacto" class="form-label">[[#{plataforma.empresa.telefono}]]</label>
+                                    <input type="text" class="form-control" id="telefonoContacto" th:field="*{telefonoContacto}" maxlength="30"/>
+                                    <div class="text-danger small" th:if="${#fields.hasErrors('telefonoContacto')}" th:errors="*{telefonoContacto}"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="direccion" class="form-label">[[#{empresa.perfil.direccion}]]</label>
+                                    <input type="text" class="form-control" id="direccion" th:field="*{direccion}" maxlength="255"/>
+                                    <div class="text-danger small" th:if="${#fields.hasErrors('direccion')}" th:errors="*{direccion}"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="logo" class="form-label">[[#{plataforma.empresa.logo}]]</label>
+                                    <div class="mb-2" th:if="${empresa.logoRuta != null}">
+                                        <img th:src="${empresa.logoRuta}" alt="Logo" height="80" class="rounded border"/>
+                                    </div>
+                                    <input type="file" class="form-control" id="logo" name="logo" accept="image/png,image/jpeg"/>
+                                    <div class="form-text">[[#{plataforma.empresa.logo.ayuda}]]</div>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fa-solid fa-floppy-disk"></i> [[#{accion.guardar}]]
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section th:replace="~{general/fragmentos :: mostrarToast}"></section>
+        <footer th:replace="~{general/fragmentos :: footer}"></footer>
+    </body>
+</html>

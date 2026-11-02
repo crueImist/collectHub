@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{general/fragmentos :: head}"></head>
+    <body>
+        <header th:replace="~{general/fragmentos :: header}"></header>
+
+        <section class="container py-4">
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body p-4">
+                            <h3 class="text-center">[[#{plataforma.empresa.titulo}]]</h3>
+                            <p class="text-center text-muted mb-4">[[#{plataforma.empresa.subtitulo}]]</p>
+
+                            <form method="post" enctype="multipart/form-data"
+                                  th:action="@{/plataforma/empresa/nueva(_csrf=${_csrf.token})}" th:object="${form}">
+                                <div class="mb-3">
+                                    <label for="nombreComercial" class="form-label">[[#{plataforma.empresa.nombre}]]</label>
+                                    <input type="text" class="form-control" id="nombreComercial" th:field="*{nombreComercial}"
+                                           maxlength="100" placeholder="Ej. Galaxy Collectibles"/>
+                                    <div class="text-danger small" th:if="${#fields.hasErrors('nombreComercial')}" th:errors="*{nombreComercial}"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="nombreAdministrador" class="form-label">[[#{plataforma.empresa.admin}]]</label>
+                                    <input type="text" class="form-control" id="nombreAdministrador" th:field="*{nombreAdministrador}" maxlength="30"/>
+                                    <div class="text-danger small" th:if="${#fields.hasErrors('nombreAdministrador')}" th:errors="*{nombreAdministrador}"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="apellidosAdministrador" class="form-label">[[#{plataforma.empresa.apellidos}]]</label>
+                                    <input type="text" class="form-control" id="apellidosAdministrador" th:field="*{apellidosAdministrador}" maxlength="40"/>
+                                    <div class="text-danger small" th:if="${#fields.hasErrors('apellidosAdministrador')}" th:errors="*{apellidosAdministrador}"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="logo" class="form-label">[[#{plataforma.empresa.logo}]]</label>
+                                    <input type="file" class="form-control" id="logo" name="logo" accept="image/png,image/jpeg"/>
+                                    <div class="form-text">[[#{plataforma.empresa.logo.ayuda}]]</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="correo" class="form-label">[[#{plataforma.empresa.correo}]]</label>
+                                    <input type="email" class="form-control" id="correo" th:field="*{correo}"
+                                           maxlength="75" placeholder="ventas@empresa.com"/>
+                                    <div class="text-danger small" th:if="${#fields.hasErrors('correo')}" th:errors="*{correo}"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="telefono" class="form-label">[[#{plataforma.empresa.telefono}]]</label>
+                                    <input type="text" class="form-control" id="telefono" th:field="*{telefono}"
+                                           maxlength="25" placeholder="+506 8888 8888"/>
+                                    <div class="text-danger small" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="contrasena" class="form-label">[[#{login.password}]]</label>
+                                    <input type="password" class="form-control" id="contrasena" th:field="*{contrasena}" maxlength="72"/>
+                                    <div class="form-text">[[#{plataforma.empresa.password.ayuda}]]</div>
+                                    <div class="text-danger small" th:if="${#fields.hasErrors('contrasena')}" th:errors="*{contrasena}"></div>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fa-solid fa-store"></i> [[#{plataforma.empresa.crear}]]
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section th:replace="~{general/fragmentos :: mostrarToast}"></section>
+        <footer th:replace="~{general/fragmentos :: footer}"></footer>
+    </body>
+</html>

@@ -1,0 +1,6 @@
+# Normaliza los saltos de línea para que Windows/Mac/Linux no generen cambios falsos en los commits
+* text=auto
+/mvnw text eol=lf
+*.cmd text eol=crlf
+*.png binary
+*.ico binary

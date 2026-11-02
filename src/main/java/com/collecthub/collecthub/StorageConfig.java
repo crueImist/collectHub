@@ -1,0 +1,40 @@
+package com.collecthub.collecthub;
+
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
+import java.io.IOException;
+import java.io.InputStream;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
+
+@Slf4j
+@Configuration
+public class StorageConfig {
+
+    @Value("${firebase.json.path}")
+    private String jsonPath;
+
+    @Value("${firebase.json.file}")
+    private String jsonFile;
+
+    @Bean
+    public Storage storage() throws IOException {
+        ClassPathResource resource = new ClassPathResource(jsonPath + "/" + jsonFile);
+        if (!resource.exists()) {
+            // El archivo de credenciales NO se sube a GitHub (ver README).
+            // Sin él la aplicación arranca igual, pero no se pueden subir imágenes.
+            log.warn("No se encontró {}/{} en resources. La subida de imágenes a Firebase no funcionará.",
+                    jsonPath, jsonFile);
+            return StorageOptions.getUnauthenticatedInstance().getService();
+        }
+        try (InputStream inputStream = resource.getInputStream()) {
+            GoogleCredentials credentials = GoogleCredentials.fromStream(inputStream);
+            return StorageOptions.newBuilder().setCredentials(credentials).build().getService();
+        }
+    }
+
+}
